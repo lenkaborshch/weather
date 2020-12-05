@@ -3,7 +3,7 @@ import axios from 'axios'
 const API_KEY = 'd047497993add0ea996af560b7e11c70'
 
 const instance = axios.create({
-    baseURL: `http://api.openweathermap.org/`,
+    baseURL: `https://api.openweathermap.org/`,
 })
 
 export const currentWeatherAPI = {
