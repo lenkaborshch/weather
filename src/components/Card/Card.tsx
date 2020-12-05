@@ -5,26 +5,29 @@ import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
 import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
-import {Tooltip} from '@material-ui/core'
 import {Delete} from '@material-ui/icons'
-import {deleteCityCard} from '../../store/sitiesCardsReducer'
+import RefreshRoundedIcon from '@material-ui/icons/RefreshRounded'
+import {deleteCityCard, updateCity} from '../../store/sitiesCardsReducer'
 import {useDispatch} from 'react-redux'
+import {Tooltip} from '@material-ui/core'
+
+type InfoTempType = {
+    'temp': number
+    'feels_like': number
+    'temp_min': number
+    'temp_max': number
+    'pressure': number
+    'humidity': number
+}
 
 type CardPropsType = {
     cityId: number
     cityName: string
-    generalInfoTemp: {
-        'temp': number
-        'feels_like': number
-        'temp_min': number
-        'temp_max': number
-        'pressure': number
-        'humidity': number
-    },
+    infoTemp: InfoTempType
     wind: {
         'speed': number
         'deg': number
-    },
+    }
     icon: string
 }
 
@@ -40,6 +43,15 @@ function getDateNow(date: Date) {
 
 const date = getDateNow(new Date())
 
+const roundingTemp = (infoTemp: InfoTempType): InfoTempType => {
+    for (let objKey in infoTemp) {
+        // @ts-ignore
+        infoTemp[objKey] = Math.round(infoTemp[objKey])
+
+    }
+    return infoTemp
+}
+
 const useStyles = makeStyles(() =>
     createStyles({
         root: {
@@ -53,49 +65,70 @@ const useStyles = makeStyles(() =>
         },
         tempNow: {
             textAlign: 'center'
+        },
+        refreshBtn: {
+            paddingRight: '5px'
+        },
+        deleteBtn: {
+            paddingLeft: '5px'
         }
     }),
 )
 
 export function CityCard(props: CardPropsType) {
-    let {cityId, cityName, generalInfoTemp, wind, icon} = props
+    let {cityId, cityName, infoTemp, wind, icon} = props
+    infoTemp = roundingTemp(infoTemp)
+
     const dispatch = useDispatch()
     const classes = useStyles()
 
     const deleteCardClick = () => {
         dispatch(deleteCityCard(cityId))
     }
+    const refreshCardClick = () => {
+        dispatch(updateCity(cityId))
+    }
 
     return (
         <Card className={classes.root}>
             <CardHeader
                 action={
-                    <Tooltip title="Delete">
-                        <IconButton aria-label="delete" onClick={deleteCardClick}>
-                            <Delete/>
-                        </IconButton>
-                    </Tooltip>
+                    <div>
+                        <Tooltip title='Refresh'>
+                            <IconButton className={classes.refreshBtn} onClick={refreshCardClick}>
+                                <RefreshRoundedIcon/>
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title='Delete'>
+                            <IconButton className={classes.deleteBtn} onClick={deleteCardClick}>
+                                <Delete/>
+                            </IconButton>
+                        </Tooltip>
+                    </div>
                 }
-                title={cityName}
+                title={
+                    <Typography variant='h5' component='h1'>
+                        {cityName}
+                    </Typography>}
                 subheader={date}
             />
             <CardContent>
                 <Typography variant='h5' component='h1' className={classes.tempNow}>
-                    {generalInfoTemp.temp} ℃
+                    {infoTemp.temp} ℃
                 </Typography>
                 <img style={{
                     display: 'block',
                     marginLeft: 'auto',
                     marginRight: 'auto'
-                }} src={`http://openweathermap.org/img/wn/${icon}@2x.png`} alt='weatherImage'/>
+                }} src={`https://openweathermap.org/img/wn/${icon}@2x.png`} alt='weatherImage'/>
                 <Typography variant="body2" color="textSecondary" component="p">
-                    Feels like: {generalInfoTemp.feels_like} ℃
+                    Feels like: {infoTemp.feels_like} ℃
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">
-                    High: {generalInfoTemp.temp_max} ℃
+                    High: {infoTemp.temp_max} ℃
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">
-                    Low: {generalInfoTemp.temp_min} ℃
+                    Low: {infoTemp.temp_min} ℃
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">
                     Wind: {wind.speed} m/s

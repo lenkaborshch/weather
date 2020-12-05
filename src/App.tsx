@@ -29,7 +29,7 @@ export const App = () => {
                         return (
                             <Grid item key={city.id}>
                                 <CityCard cityId={city.id} cityName={city.name}
-                                          generalInfoTemp={city.main} wind={city.wind}
+                                          infoTemp={city.main} wind={city.wind}
                                           icon={city.weather[0].icon}/>
                             </Grid>)
                     })}

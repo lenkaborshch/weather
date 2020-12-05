@@ -23,7 +23,7 @@ export const CitySearchForm = React.memo(() => {
         <form onSubmit={formik.handleSubmit} className={style.formSearch}>
             <Input placeholder='City' {...formik.getFieldProps('cityName')}
                    onChange={formik.handleChange} value={formik.values.cityName}
-            className={style.inputFormSearch}/>
+                   className={style.inputFormSearch}/>
             <Button type='submit' disabled={isLoading || !formik.values.cityName}
                     variant='contained' color='primary'>Add</Button>
         </form>
