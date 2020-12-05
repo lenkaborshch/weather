@@ -6,15 +6,39 @@ import CardContent from '@material-ui/core/CardContent'
 import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
 import {Tooltip} from '@material-ui/core'
-import {DeleteRounded} from '@material-ui/icons'
+import {Delete} from '@material-ui/icons'
+import {deleteCityCard} from '../../store/sitiesCardsReducer'
+import {useDispatch} from 'react-redux'
 
-const options = {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
+type CardPropsType = {
+    cityId: number
+    cityName: string
+    generalInfoTemp: {
+        'temp': number
+        'feels_like': number
+        'temp_min': number
+        'temp_max': number
+        'pressure': number
+        'humidity': number
+    },
+    wind: {
+        'speed': number
+        'deg': number
+    },
+    icon: string
 }
 
-const date = new Date().toLocaleString('ru', options)
+function getDateNow(date: Date) {
+    let days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+    let month = months[date.getMonth()]
+    let dayOfWeek = days[date.getDay()]
+
+    return `${dayOfWeek} ${date.getDate()} ${month}`
+}
+
+const date = getDateNow(new Date())
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -33,30 +57,13 @@ const useStyles = makeStyles(() =>
     }),
 )
 
-type CardPropsType = {
-    cityName: string
-    generalInfoTemp: {
-        'temp': number
-        'feels_like': number
-        'temp_min': number
-        'temp_max': number
-        'pressure': number
-        'humidity': number
-    },
-    wind: {
-        'speed': number
-        'deg': number
-    }
-}
-
 export function CityCard(props: CardPropsType) {
-    let {cityName, generalInfoTemp, wind} = props
-
+    let {cityId, cityName, generalInfoTemp, wind, icon} = props
+    const dispatch = useDispatch()
     const classes = useStyles()
-    const [expanded, setExpanded] = React.useState(false)
 
     const deleteCardClick = () => {
-        setExpanded(!expanded)
+        dispatch(deleteCityCard(cityId))
     }
 
     return (
@@ -65,7 +72,7 @@ export function CityCard(props: CardPropsType) {
                 action={
                     <Tooltip title="Delete">
                         <IconButton aria-label="delete" onClick={deleteCardClick}>
-                            <DeleteRounded/>
+                            <Delete/>
                         </IconButton>
                     </Tooltip>
                 }
@@ -80,7 +87,7 @@ export function CityCard(props: CardPropsType) {
                     display: 'block',
                     marginLeft: 'auto',
                     marginRight: 'auto'
-                }} src='http://openweathermap.org/img/wn/10d@2x.png' alt='weatherImage'/>
+                }} src={`http://openweathermap.org/img/wn/${icon}@2x.png`} alt='weatherImage'/>
                 <Typography variant="body2" color="textSecondary" component="p">
                     Feels like: {generalInfoTemp.feels_like} ℃
                 </Typography>
