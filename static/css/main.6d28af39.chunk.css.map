@@ -1,1 +1,0 @@
-{"version":3,"sources":["webpack://src/components/CitySearchForm/CitySearchForm.module.css"],"names":[],"mappings":"AAAA,kCACI,YAAa,CACb,iBACJ,CAEA,uCACI,UACJ","file":"main.6d28af39.chunk.css","sourcesContent":[".formSearch {\r\n    padding: 30px;\r\n    text-align: center;\r\n}\r\n\r\n.inputFormSearch {\r\n    margin: 5px;\r\n}"]}
