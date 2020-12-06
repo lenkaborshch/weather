@@ -1,6 +1,7 @@
 import {currentWeatherAPI, GetWeatherAPIType} from '../api/api'
 import {Dispatch} from 'redux'
-import {toggleIsLoading} from './appReducer'
+import {setError, toggleIsLoading} from './appReducer'
+import {AppStateType} from './store'
 
 const ADD_CITY_CARD = 'ADD_CITY_CARD'
 const DELETE_CITY_CARD = 'DELETE_CITY_CARD'
@@ -33,32 +34,36 @@ const addCityCard = (cityCard: GetWeatherAPIType) => ({type: ADD_CITY_CARD, city
 const updateCityCard = (cityCard: GetWeatherAPIType) => ({type: UPDATE_CITY_CARD, cityCard} as const)
 export const deleteCityCard = (cityId: number) => ({type: DELETE_CITY_CARD, cityId} as const)
 
-export const addCity = (cityName: string) => (dispatch: Dispatch) => {
-    dispatch(toggleIsLoading(true))
-    return currentWeatherAPI.getWeatherByName(cityName)
-        .then(res => {
-            if (res.cod === 200) {
-                dispatch(addCityCard(res))
+
+export const getCityCard = (cityName: string, action: 'ADD' | 'UPDATE') => {
+    return async (dispatch: Dispatch, getState: () => AppStateType) => {
+        try {
+            dispatch(toggleIsLoading(true))
+            let result = await currentWeatherAPI.getCurrentWeather(cityName)
+            if (action === 'ADD') {
+                const isDuplicateCity = getState().citiesCards.find(el => el.id === result.id)
+                isDuplicateCity ? dispatch(setError('This city was selected')) : dispatch(addCityCard(result))
+            } else if (action === 'UPDATE') {
+                dispatch(updateCityCard(result))
             }
-        })
-        .finally(() => {
-                dispatch(toggleIsLoading(false))
-            }
-        )
+            dispatch(toggleIsLoading(false))
+        } catch (err) {
+            dispatch(setError('Error! This city not found'))
+            dispatch(toggleIsLoading(false))
+        }
+    }
 }
 
-export const updateCity = (cityId: number) => (dispatch: Dispatch) => {
-    dispatch(toggleIsLoading(true))
-    return currentWeatherAPI.getWeatherById(cityId)
-        .then(res => {
-            if (res.cod === 200) {
-                dispatch(updateCityCard(res))
-            }
-        })
-        .finally(() => {
-                dispatch(toggleIsLoading(false))
-            }
-        )
+export const getSeveralCitiesCard = (citiesId: string) => async (dispatch: Dispatch) => {
+    try {
+        dispatch(toggleIsLoading(true))
+        let result = await currentWeatherAPI.getCurrentWeatherForSeveral(citiesId)
+        result.list.forEach(el => dispatch(addCityCard(el)))
+        dispatch(toggleIsLoading(false))
+    } catch (err) {
+        dispatch(setError('Error!'))
+        dispatch(toggleIsLoading(false))
+    }
 }
 
 type ActionsType = ReturnType<typeof addCityCard>

@@ -1,7 +1,7 @@
 import {useFormik} from 'formik'
 import React from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import {addCity} from '../../store/sitiesCardsReducer'
+import {getCityCard} from '../../store/sitiesCardsReducer'
 import {AppStateType} from '../../store/store'
 import style from './CitySearchForm.module.css'
 import {Button, Input} from '@material-ui/core'
@@ -15,7 +15,7 @@ export const CitySearchForm = React.memo(() => {
             cityName: '',
         },
         onSubmit: (values) => {
-            dispatch(addCity(values.cityName))
+            dispatch(getCityCard(values.cityName, 'ADD'))
             formik.resetForm()
         },
     })

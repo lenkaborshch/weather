@@ -7,12 +7,12 @@ const instance = axios.create({
 })
 
 export const currentWeatherAPI = {
-    getWeatherByName(cityName: string) {
+    getCurrentWeather(cityName: string) {
         return instance.get<GetWeatherAPIType>(`data/2.5/weather?appid=${API_KEY}&units=metric&q=${cityName}`)
             .then(res => res.data)
     },
-    getWeatherById(cityId: number) {
-        return instance.get<GetWeatherAPIType>(`data/2.5/weather?appid=${API_KEY}&units=metric&id=${cityId}`)
+    getCurrentWeatherForSeveral(citiesId: string) {
+        return instance.get<GetWeatherAPIForSeveralType>(`data/2.5/group?id=${citiesId}&appid=${API_KEY}&units=metric`)
             .then(res => res.data)
     },
 }
@@ -59,4 +59,8 @@ export type GetWeatherAPIType = {
     id: number
     name: string
     cod: number
+}
+export type GetWeatherAPIForSeveralType = {
+    cnt: number
+    list: Array<GetWeatherAPIType>
 }
