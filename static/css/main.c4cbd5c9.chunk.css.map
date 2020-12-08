@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/index.css"],"names":[],"mappings":"AAAA,KACI,6EAAmD,CACnD,qBAAsB,CACtB,2BACJ","file":"main.c4cbd5c9.chunk.css","sourcesContent":["body {\r\n    background-image: url(img/pexels-no-name-66997.jpg);\r\n    background-size: cover;\r\n    background-repeat: no-repeat;\r\n}"]}
