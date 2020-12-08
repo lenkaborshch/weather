@@ -1,12 +1,25 @@
 import {useFormik} from 'formik'
 import React from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import {getCityCard} from '../../store/sitiesCardsReducer'
-import {AppStateType} from '../../store/store'
-import style from './CitySearchForm.module.css'
+import {getCityCard} from '../../../store/citiesCardsReducer'
+import {AppStateType} from '../../../store/store'
 import {Button, Input} from '@material-ui/core'
+import {createStyles, makeStyles} from '@material-ui/core/styles'
+
+const useStyles = makeStyles(() =>
+    createStyles({
+        formSearch: {
+            padding: '30px',
+            textAlign: 'center',
+        },
+        inputFormSearch: {
+            margin: '5px'
+        }
+    })
+)
 
 export const CitySearchForm = React.memo(() => {
+    const classes = useStyles()
     const isLoading = useSelector<AppStateType, boolean>(state => state.app.isLoading)
     const dispatch = useDispatch()
 
@@ -19,11 +32,12 @@ export const CitySearchForm = React.memo(() => {
             formik.resetForm()
         },
     })
+
     return (
-        <form onSubmit={formik.handleSubmit} className={style.formSearch}>
+        <form onSubmit={formik.handleSubmit} className={classes.formSearch}>
             <Input placeholder='City' {...formik.getFieldProps('cityName')}
                    onChange={formik.handleChange} value={formik.values.cityName}
-                   className={style.inputFormSearch}/>
+                   className={classes.inputFormSearch}/>
             <Button type='submit' disabled={isLoading || !formik.values.cityName}
                     variant='contained' color='primary'>Add</Button>
         </form>

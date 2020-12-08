@@ -1,28 +1,19 @@
 import React, {useEffect} from 'react'
-import './App.css'
 import {useDispatch, useSelector} from 'react-redux'
 import {AppStateType} from './store/store'
-import {getSeveralCitiesCard, SitiesCardsType} from './store/sitiesCardsReducer'
-import {CityCard} from './components/CityCard/CityCard'
-import Grid from '@material-ui/core/Grid'
 import {AppBar, Container, LinearProgress, Toolbar, Typography} from '@material-ui/core'
-import {CitySearchForm} from './components/CitySearchForm/CitySearchForm'
 import {ErrorSnackbar} from './components/ErrorSnackbar/ErrorSnackbar'
+import {Route, Switch} from 'react-router-dom'
+import {ShortWeather} from './components/ShortWeather/ShortWeather'
+import {DetailsWeather} from './components/DetailsWeather/DetailsWeather'
+import {getSeveralCitiesCard} from './store/citiesCardsReducer'
+import {GetWeatherCityType} from './types/types'
 
 export const App = () => {
-    const cities = useSelector<AppStateType, SitiesCardsType>(state => state.citiesCards)
     const isLoading = useSelector<AppStateType, boolean>(state => state.app.isLoading)
     const error = useSelector<AppStateType, null | string>(state => state.app.error)
+    const cities = useSelector<AppStateType, Array<GetWeatherCityType>>(state => state.citiesCardsWeather.citiesCards)
     const dispatch = useDispatch()
-
-    const citiesCards = cities.map(city => {
-        return (
-            <Grid item key={city.id}>
-                <CityCard cityId={city.id} cityName={city.name}
-                          infoTemp={city.main} wind={city.wind}
-                          icon={city.weather[0].icon}/>
-            </Grid>)
-    })
 
     useEffect(() => {
         const localDataCards = localStorage.getItem('cityCards')
@@ -38,7 +29,7 @@ export const App = () => {
     }, [cities])
 
     return (
-        <div className='App'>
+        <div>
             {error && <ErrorSnackbar/>}
             <AppBar position='static'>
                 <Toolbar>
@@ -49,10 +40,10 @@ export const App = () => {
                 {isLoading && <LinearProgress color='secondary'/>}
             </AppBar>
             <Container fixed>
-                <CitySearchForm/>
-                <Grid container spacing={3}>
-                    {citiesCards}
-                </Grid>
+                <Switch>
+                    <Route exact path='/'><ShortWeather cities={cities}/></Route>
+                    <Route path='/details/:cityName'><DetailsWeather/></Route>
+                </Switch>
             </Container>
         </div>
     )

@@ -2,27 +2,16 @@ import React from 'react'
 import Typography from '@material-ui/core/Typography'
 import {createStyles, makeStyles} from '@material-ui/core/styles'
 import CardContent from '@material-ui/core/CardContent'
-
-type InfoTempType = {
-    'temp': number
-    'feels_like': number
-    'temp_min': number
-    'temp_max': number
-    'pressure': number
-    'humidity': number
-}
-
-type CityCardContentType = {
-    infoTemp: InfoTempType
-    wind: {
-        'speed': number
-        'deg': number
-    }
-    icon: string
-}
+import {useHistory} from 'react-router-dom'
+import {roundingTemp, roundingValue} from '../../../../utils/roundingValue'
+import {getImgWeather} from '../../../../api/api'
+import {CommonCityCardPropsType} from '../../../../types/types'
 
 const useStyles = makeStyles(() =>
     createStyles({
+        cardContent: {
+            cursor: 'pointer'
+        },
         tempNow: {
             textAlign: 'center',
             fontSize: '30px'
@@ -35,28 +24,25 @@ const useStyles = makeStyles(() =>
     })
 )
 
-const roundingTemp = (infoTemp: InfoTempType): InfoTempType => {
-    for (let objKey in infoTemp) {
-        // @ts-ignore
-        infoTemp[objKey] = Math.round(infoTemp[objKey])
-    }
-    return infoTemp
-}
+export const CityCardContent = React.memo((props: CommonCityCardPropsType) => {
+    let {cityName, infoByTemp, wind, icon} = props
 
-
-export const CityCardContent = React.memo((props: CityCardContentType) => {
-    let {infoTemp, wind, icon} = props
-    infoTemp = roundingTemp(infoTemp)
+    let infoTemp = roundingTemp({...infoByTemp})
+    let windSpeed = roundingValue(wind.speed)
 
     const classes = useStyles()
+    const history = useHistory()
+
+    const redirectToDetails = () => {
+        history.push(`/details/${cityName}`)
+    }
 
     return (
-        <CardContent>
+        <CardContent onClick={redirectToDetails} className={classes.cardContent}>
             <Typography variant='h5' component='p' className={classes.tempNow}>
                 {infoTemp.temp}°C
             </Typography>
-            <img className={classes.iconWeather} src={`https://openweathermap.org/img/wn/${icon}@2x.png`}
-                 alt='weatherImage'/>
+            <img className={classes.iconWeather} src={getImgWeather(icon)} alt='weatherImage'/>
             <Typography variant='body2' color='textSecondary' component='p'>
                 Feels like: {infoTemp.feels_like} ℃
             </Typography>
@@ -67,7 +53,7 @@ export const CityCardContent = React.memo((props: CityCardContentType) => {
                 Low: {infoTemp.temp_min} ℃
             </Typography>
             <Typography variant='body2' color='textSecondary' component='p'>
-                Wind: {wind.speed} m/s
+                Wind: {windSpeed} m/s
             </Typography>
         </CardContent>
     )

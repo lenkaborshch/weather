@@ -1,3 +1,5 @@
+import {ActionsType} from '../types/types'
+
 const TOGGLE_IS_LOADING = 'TOGGLE_IS_LOADING'
 const SET_ERROR = 'SET_ERROR'
 
@@ -24,6 +26,3 @@ export const appReducer = (state = initialState, action: ActionsType): AppReduce
 
 export const toggleIsLoading = (isLoading: boolean) => ({type: TOGGLE_IS_LOADING, isLoading} as const)
 export const setError = (error: null | string) => ({type: SET_ERROR, error} as const)
-
-
-type ActionsType = ReturnType<typeof toggleIsLoading> | ReturnType<typeof setError>

@@ -7,27 +7,12 @@ import Typography from '@material-ui/core/Typography'
 import CardHeader from '@material-ui/core/CardHeader'
 import {createStyles, makeStyles} from '@material-ui/core/styles'
 import {useDispatch} from 'react-redux'
-import {deleteCityCard, getCityCard} from '../../../store/sitiesCardsReducer'
-
-const getDateNow = (date: Date) => {
-    let days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-
-    let month = months[date.getMonth()]
-    let dayOfWeek = days[date.getDay()]
-
-    return `${dayOfWeek} ${date.getDate()} ${month}`
-}
-const date = getDateNow(new Date())
+import {deleteCityCard, getCityCard} from '../../../../store/citiesCardsReducer'
+import {getDateNow} from '../../../../utils/dataDate'
+import {CityCardHeaderType} from '../../../../types/types'
 
 const useStyles = makeStyles(() =>
     createStyles({
-        refreshBtn: {
-            paddingRight: '5px'
-        },
-        deleteBtn: {
-            paddingLeft: '5px'
-        },
         cityName: {
             lineHeight: '1'
         },
@@ -37,13 +22,9 @@ const useStyles = makeStyles(() =>
     })
 )
 
-type CityCardHeaderType = {
-    cityId: number
-    cityName: string
-}
-
 export const CityCardHeader = React.memo((props: CityCardHeaderType) => {
     let {cityId, cityName} = props
+    const currentDate = getDateNow(new Date())
 
     const dispatch = useDispatch()
     const classes = useStyles()
@@ -61,12 +42,12 @@ export const CityCardHeader = React.memo((props: CityCardHeaderType) => {
             action={
                 <div>
                     <Tooltip title='Refresh'>
-                        <IconButton className={classes.refreshBtn} onClick={refreshCardClick}>
+                        <IconButton onClick={refreshCardClick}>
                             <RefreshRoundedIcon/>
                         </IconButton>
                     </Tooltip>
                     <Tooltip title='Delete'>
-                        <IconButton className={classes.deleteBtn} onClick={deleteCardClick}>
+                        <IconButton onClick={deleteCardClick}>
                             <Delete/>
                         </IconButton>
                     </Tooltip>
@@ -77,7 +58,7 @@ export const CityCardHeader = React.memo((props: CityCardHeaderType) => {
                     {cityName}
                 </Typography>
             }
-            subheader={date}
+            subheader={currentDate}
         />
     )
 })
